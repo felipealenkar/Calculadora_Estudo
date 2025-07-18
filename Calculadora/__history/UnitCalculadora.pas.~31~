@@ -1,0 +1,364 @@
+﻿unit UnitCalculadora;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, math, Vcl.ExtCtrls,
+  Vcl.Menus, Vcl.Mask, Vcl.ComCtrls, UnitEquacao;
+
+type
+  TFormEstudo = class(TForm)
+    EditNumero1: TEdit;
+    EditNumero2: TEdit;
+    ButtonSoma: TButton;
+    ButtonSubtracao: TButton;
+    ButtonMultiplicacao: TButton;
+    ButtonDivisao: TButton;
+    ButtonPotencia: TButton;
+    ButtonRaiz: TButton;
+    LabelOperador: TLabel;
+    EditResultado: TEdit;
+    LabelNumero1: TLabel;
+    LabelNumero2: TLabel;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    EditFormato: TEdit;
+    LabelCalculadora: TLabel;
+    LabelFormato: TLabel;
+    ButtonRS: TButton;
+    ProgressBarConversao: TProgressBar;
+    ButtonDelta: TButton;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Button1: TButton;
+    Function Soma(Valor1, Valor2 : Currency) : Currency;
+    Function Subtracao(Valor1, Valor2 : Currency) : Currency;
+    Function Multiplicacao(Valor1, Valor2 : Currency) : Currency;
+    Function Divisao(Valor1, Valor2 : Currency) : Currency;
+    Function ENumeros : Boolean;
+    procedure ButtonSomaClick(Sender: TObject);
+    procedure ButtonSubtracaoClick(Sender: TObject);
+    procedure ButtonMultiplicacaoClick(Sender: TObject);
+    procedure ButtonDivisaoClick(Sender: TObject);
+    procedure ButtonPotenciaClick(Sender: TObject);
+    procedure ButtonRaizClick(sender: TObject);
+    procedure EditNumero1KeyPress(Sender: TObject; var Key: Char);
+    procedure EditNumero2KeyPress(Sender: TObject; var Key: Char);
+    procedure EditFormatoKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure ButtonRSClick(Sender: TObject);
+    procedure ButtonDeltaClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+end;
+
+Type
+  Tpessoa = record
+      Nome : String;
+      Idade : Integer;
+End;
+
+var
+  FormEstudo: TFormEstudo;
+
+implementation
+
+//Função de confirmar para fechar o sistema
+procedure TFormEstudo.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+Var
+  Confirmasair: String;
+  Confirmasair2: Integer;
+
+begin
+  {Confirmasair := InputBox('Sair', 'Para sair digite CONFIRMO', '');
+  If Confirmasair = 'CONFIRMO' then
+  Begin}
+    Confirmasair2 := MessageDlg('Confirma sair da Calculadora? ', TMsgDlgType.mtConfirmation, mbYesNo, 0);
+    if Confirmasair2 = 6 then
+    begin
+      CanClose := True;
+    end else
+    begin
+      CanClose := False;
+    end
+  {end else
+  begin
+      CanClose := False;
+  end;}
+end;
+
+procedure TFormEstudo.FormCreate(Sender: TObject);
+begin
+   Showmessage('Calculadora criada');
+end;
+
+//Funcao Valida Numeros digitados
+Function TFormEstudo.ENumeros : Boolean;
+Begin
+  if (EditNumero1.Text = '') or (EditNumero2.Text = '') then
+    begin
+      Result := False;
+      EditResultado.text := '!!! Digite os números !!!';
+      EditResultado.font.color := ClPurple;
+    end else
+    begin
+      Result := True;
+      EditResultado.font.color := ClBlack;
+    end;
+
+End;
+
+//FuncaoSoma
+Function TFormEstudo.Soma(Valor1: Currency; Valor2: Currency): Currency;
+Begin
+    Result := Valor1 + Valor2;
+end;
+
+//FuncaoSubtracao
+Function TFormEstudo.Subtracao(Valor1: Currency; Valor2: Currency): Currency;
+Begin
+  Result := Valor1 - Valor2;
+End;
+
+//FuncaoMultiplicacao
+Function TFormEstudo.Multiplicacao(Valor1: Currency; Valor2: Currency): Currency;
+Begin
+  Result := Valor1 * Valor2;
+End;
+
+//FuncaoDivisao
+Function TFormEstudo.Divisao(Valor1: Currency; Valor2: Currency): Currency;
+Begin
+  Result := Valor1 / Valor2;
+End;
+
+//Valida números reais no EditNumero1
+procedure TFormEstudo.EditNumero1KeyPress(Sender: TObject; var Key: Char);
+begin
+  if (not CharInSet(Key, ['0'..'9', '-', ',', #8, #13])) or
+     ((Key = '-') and (EditNumero1.SelStart <> 0)) or
+     ((Key = ',') and (Pos(',', EditNumero1.text) > 0)) then
+  begin
+    Key := #0;
+  end;
+//Pula cursor para o Edit2
+  if key = #13 then
+    begin
+      EditNumero2.SetFocus;
+    end;
+end;
+
+//Valida números reais no EditNumero2
+procedure TFormEstudo.EditNumero2KeyPress(Sender: TObject; var Key: Char);
+begin
+    if (not CharInSet(Key, ['0'..'9', '-', ',', #8, #13])) or
+     ((Key = '-') and (EditNumero2.SelStart <> 0)) or
+     ((Key = ',') and (Pos(',', EditNumero2.text) > 0)) then
+  begin
+    Key := #0;
+  end;
+//Pula cursor para o EditResultado
+  if key = #13 then
+    begin
+      ButtonSoma.SetFocus;
+    end;
+end;
+
+//Valida números reais no EditFormato
+procedure TFormEstudo.EditFormatoKeyPress(Sender: TObject; var Key: Char);
+begin
+  //Pula cursor para o Botão RS
+  if key = #13 then
+    begin
+      ButtonRS.SetFocus;
+    end;
+end;
+
+{$R *.dfm}
+
+//Ao clicar no +
+procedure TFormEstudo.ButtonSomaClick(Sender: TObject);
+Var
+  Resultado : Currency;
+begin
+    LabelOperador.Caption := '+';
+    LabelNumero1.Caption := 'Adendo 1';
+    LabelNumero2.Caption := 'Adendo 2';
+    if ENumeros = True then
+    begin
+      Resultado := Soma(StrToCurr(EditNumero1.text), StrToCurr(EditNumero2.text));
+      EditResultado.text := CurrToStr(Resultado);
+    end;
+end;
+
+
+//Ao clicar no -
+procedure TFormEstudo.ButtonSubtracaoClick(Sender: TObject);
+Var
+  Resultado : Currency;
+begin
+    LabelOperador.Caption := '-';
+    LabelNumero1.Caption := 'Minuendo';
+    LabelNumero2.Caption := 'Subtraendo';
+    if ENumeros = True then
+    begin
+      Resultado := Subtracao(StrToCurr(EditNumero1.text), StrToCurr(EditNumero2.text));
+      EditResultado.text := CurrToStr(Resultado);
+    end;
+end;
+
+//Ao clicar no X
+procedure TFormEstudo.ButtonMultiplicacaoClick(Sender: TObject);
+Var
+  Resultado : Currency;
+begin
+    LabelOperador.Caption := 'X';
+    LabelNumero1.Caption := 'Fator 1';
+    LabelNumero2.Caption := 'Fator 2';
+    if ENumeros = True then
+    begin
+      Resultado := Multiplicacao(StrToCurr(EditNumero1.text), StrToCurr(EditNumero2.text));
+      EditResultado.text := CurrToStr(Resultado);
+    end;
+end;
+
+//Ao clicar no /
+procedure TFormEstudo.ButtonDivisaoClick(Sender: TObject);
+Var
+  Resultado : Currency;
+begin
+    LabelOperador.Caption := '/';
+    LabelNumero1.Caption := 'Dividendo';
+    LabelNumero2.Caption := 'Divisor';
+    if ENumeros = True then
+    begin
+      if EditNumero2.text = '0' then
+      begin
+        EditResultado.text := 'Não se divide por zero';
+        EditResultado.font.color := Clred;
+      end else
+      begin
+        Resultado := Divisao(StrToCurr(EditNumero1.text), StrToCurr(EditNumero2.text));
+        EditResultado.text := CurrToStr(Resultado);
+      end;
+    end;
+
+end;
+
+//Ao clicar no x°
+procedure TFormEstudo.ButtonPotenciaClick(Sender: TObject);
+Var
+  Resultado : Currency;
+begin
+    LabelOperador.Caption := 'x°';
+    LabelNumero1.Caption := 'Base';
+    LabelNumero2.Caption := 'Expoente';
+    if ENumeros = True then
+    begin
+        if (EditNumero1.text = '0') and (StrToCurr(EditNumero2.text) <= -1) then
+        Begin
+           EditResultado.text := 'Não existe essa potência';
+           EditResultado.Font.Color := ClRed;
+        End
+        else
+        Begin
+          Resultado := Power(StrToCurr(EditNumero1.text), StrToCurr(EditNumero2.text));
+          EditResultado.text := CurrToStr(Resultado);
+          EditResultado.Font.Color := ClBlack;
+        End;
+
+    end;
+end;
+
+//Ao clicar no √
+procedure TFormEstudo.ButtonRaizClick(Sender: TObject);
+Var
+  Resultado : Currency;
+begin
+    LabelOperador.Caption := '√';
+    LabelNumero1.Caption := 'Índice';
+    LabelNumero2.Caption := 'Radicando';
+    if ENumeros = True then
+    begin
+      if (EditNumero1.text = '0') or ((StrToCurr(EditNumero2.text) < 0) and not (Odd(StrToInt(EditNumero1.text)))) then
+      begin
+        EditResultado.text := 'Não existe essa raíz';
+        EditResultado.font.color := Clred;
+      end else
+      begin
+        if StrToCurr(EditNumero2.text) >= 0 then
+        begin
+          Resultado := Power(StrToCurr(EditNumero2.text), 1 / StrToCurr(EditNumero1.text));
+        end else
+        begin
+          Resultado := -Power(Abs(StrToCurr(EditNumero2.text)), 1 / StrToCurr(EditNumero1.text));
+        end;
+        EditResultado.text := CurrToStr(Resultado);
+      end;
+    end;
+end;
+
+//Ao clicar no Δ
+procedure TFormEstudo.ButtonDeltaClick(Sender: TObject);
+begin
+    if not assigned(FormEquacao) then
+    begin
+    FormEquacao := TFormEquacao.Create(nil);
+    end;
+    FormEquacao.ShowModal;
+    EditResultado.text := FormEquacao.ResultadoEquacao;
+    if EditResultado.text = 'Sem resultado' then
+    begin
+       EditResultado.font.color := ClRed;
+    end
+    else
+    begin
+       EditResultado.font.color := ClBlack;
+    end;
+    FormEquacao.Free;
+    FormEquacao := Nil;
+end;
+
+//Ao clicar no RS
+procedure TFormEstudo.ButtonRSClick(Sender: TObject);
+Var
+  Conversao : Currency;
+  Progresso : Integer;
+  begin
+    if not TryStrToCurr(EditFormato.text, Conversao) then
+    begin
+      EditFormato.text := 'Não é um número real';
+      EditFormato.font.Color := Clred;
+    end
+    else
+    begin
+       for Progresso := 0 to 5000 do
+         begin
+           ProgressBarConversao.Position := Progresso;
+         end;
+
+      Conversao := StrtoCurr(EditFormato.text);
+      EditFormato.font.Color := Clblack;
+      EditFormato.text := FormatCurr('#,#0.00', Conversao);
+      EditFormato.SetFocus;
+    end;
+  end;
+
+//Ao clicar no Cadastro
+procedure TFormEstudo.Button1Click(Sender: TObject);
+begin
+   Var Pessoa : Array[1..2] of TPessoa;
+   Pessoa[1].Nome := Edit1.text;
+   Pessoa[1].Idade := StrToInt(Edit2.text);
+
+   Showmessage('Nome: ' + Pessoa[1].Nome);
+   Showmessage('Idade ' + IntToStr(Pessoa[1].Idade));
+
+end;
+End.
