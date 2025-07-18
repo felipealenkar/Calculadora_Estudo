@@ -1,0 +1,113 @@
+unit UnitEquacao;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, math;
+
+type
+  TFormEquacao = class(TForm)
+    EditA: TEdit;
+    EditB: TEdit;
+    LabelA: TLabel;
+    Labelb: TLabel;
+    Label1: TLabel;
+    EditC: TEdit;
+    Label2: TLabel;
+    EditDelta: TEdit;
+    ButtonCalcular: TButton;
+    LabelX1: TLabel;
+    EditX1: TEdit;
+    LabelX2: TLabel;
+    EditX2: TEdit;
+    procedure ButtonCalcularClick(Sender: TObject);
+    procedure EditAKeyPress(Sender: TObject; var Key: Char);
+    procedure EditBKeyPress(Sender: TObject; var Key: Char);
+    procedure EditCKeyPress(Sender: TObject; var Key: Char);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    ResultadoEquacao : String;
+  end;
+
+var
+  FormEquacao: TFormEquacao;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormEquacao.ButtonCalcularClick(Sender: TObject);
+
+Var
+   a, b, c, Delta, x1, x2 : Currency;
+
+ begin
+
+   if EditA.text = '' then
+     EditA.text := '0';
+   if EditB.text = '' then
+     EditB.text := '0';
+   if EditC.text = '' then
+     EditC.text := '0';
+
+   if (not TryStrToCurr(EditA.text, a)) or (not TryStrToCurr(EditB.text, b)) or
+     (not TryStrToCurr(EditC.text, c)) then
+   begin
+     ShowMessage('Equações do 2º grau devem conter apenas Números.');
+     EditA.SetFocus;
+   end
+   else
+   begin
+     a := StrToCurr(EditA.text);
+     b := StrToCurr(EditB.text);
+     c := StrToCurr(EditC.text);
+
+     Delta := (Power(b, 2)) - (4 * (a) * (c));
+     EditDelta.text := CurrtoStr(Delta);
+
+     if Delta < 0 then
+     begin
+       MessageDlg('Delta Negativo, a equação não possúi soluções reais ', TMsgDlgType.mtWarning, [mbOK], 0);
+       EditA.SetFocus;
+     end
+     else
+     begin
+       x1 := ((-b) + Power(Delta, 1 / 2)) / 2 * (a);
+       x2 := ((-b) - Power(Delta, 1 / 2)) / 2 * (a);
+
+       EditX1.text := CurrtoStr(x1);
+       EditX2.text := CurrtoStr(x2);
+       ResultadoEquacao := 'x1 = ' + EditX1.text + ' e x2 = ' + EditX2.text;
+       EditA.SetFocus;
+     end;
+   end;
+ end;
+
+ procedure TFormEquacao.EditAKeyPress(Sender: TObject; var Key: Char);
+begin
+   If Key = #13 then
+   begin
+     EditB.SetFocus;
+   end;
+end;
+
+procedure TFormEquacao.EditBKeyPress(Sender: TObject; var Key: Char);
+begin
+   If Key = #13 then
+   begin
+     EditC.SetFocus;
+   end;
+end;
+
+procedure TFormEquacao.EditCKeyPress(Sender: TObject; var Key: Char);
+begin
+   If Key = #13 then
+   begin
+     ButtonCalcular.SetFocus;
+   end;
+end;
+
+end.

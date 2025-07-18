@@ -1,0 +1,2 @@
+- Criado o projeto
+- Atualizado a versão para 1.0

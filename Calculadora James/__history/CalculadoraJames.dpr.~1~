@@ -1,0 +1,14 @@
+program Estudo;
+
+uses
+  Vcl.Forms,
+  UnitEstudo in 'UnitEstudo.pas' {FormEstudo};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFormEstudo, FormEstudo);
+  Application.Run;
+end.
